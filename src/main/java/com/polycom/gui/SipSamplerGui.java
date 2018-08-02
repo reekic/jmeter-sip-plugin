@@ -41,6 +41,7 @@ public class SipSamplerGui extends AbstractSamplerGui {
         ss.setTransport(this.sipPanel.getTransport());
         ss.setLocalUserAlias(this.sipPanel.getLocalUserAlias());
         ss.setLocalName(this.sipPanel.getLocalName());
+        ss.setLocalNameDomain(this.sipPanel.getLocalNameDomain());
         ss.setLocalAddress(this.sipPanel.getLocalAddress());
         ss.setLocalPort(this.sipPanel.getLocalPort());
         ss.setUuid(this.sipPanel.getUuid());
@@ -56,6 +57,7 @@ public class SipSamplerGui extends AbstractSamplerGui {
         this.sipPanel.setRemotePort(sampler.getRemotePort());
         this.sipPanel.setLocalUserAlias(sampler.getLocalUserAlias());
         this.sipPanel.setLocalName(sampler.getLocalName());
+        this.sipPanel.setLocalNameDomain(sampler.getLocalNameDomain());
         this.sipPanel.setLocalPort(sampler.getLocalPort());
         this.sipPanel.setLocalAddress(sampler.getLocalAddress());
         this.sipPanel.setUuid(sampler.getUuid());

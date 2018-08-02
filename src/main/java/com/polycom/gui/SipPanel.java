@@ -1,5 +1,6 @@
 package com.polycom.gui;
 
+import org.apache.jmeter.gui.util.HorizontalPanel;
 import org.apache.jmeter.gui.util.VerticalPanel;
 
 import javax.swing.*;
@@ -25,10 +26,13 @@ public class SipPanel extends JPanel {
     private JLabel localNameLabel = new JLabel("Local User Name: ");
     private JTextField localName;
 
-    private JLabel localAddressLabel = new JLabel("Local Address: ");
+    private JLabel localDomainLabel = new JLabel("Local User Domain: ");
+    private JTextField localDomain;
+
+    private JLabel localAddressLabel = new JLabel("Proxy Address: ");
     private JTextField localAddress;
 
-    private JLabel localPortLabel = new JLabel("Local Port: ");
+    private JLabel localPortLabel = new JLabel("Proxy Port: ");
     private JTextField localPort;
 
     private JLabel uuidLabel = new JLabel("UUID: ");
@@ -43,26 +47,104 @@ public class SipPanel extends JPanel {
 
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(createRemoteInfoPanel());
-        mainPanel.add(createLocalInfoPanel());
+        mainPanel.add(createCallerInfoPanel());
+        mainPanel.add(createProxyInfoPannel());
         mainPanel.add(createUuidPanel());
         mainPanel.add(createSdpPanel());
         add(mainPanel);
     }
 
-
     public JPanel createRemoteInfoPanel(){
-        return null;
+        JPanel calleePanel = new HorizontalPanel();
+
+        remoteNameLabel.setLabelFor(remoteName);
+        JPanel namePanel = new JPanel(new BorderLayout(5,5));
+        namePanel.add(remoteNameLabel,BorderLayout.WEST);
+        namePanel.add(remoteName, BorderLayout.CENTER);
+
+        remoteAddressLabel.setLabelFor(remoteAddress);
+        JPanel addressPanel = new JPanel(new BorderLayout(5,5));
+        addressPanel.add(remoteAddressLabel,BorderLayout.WEST);
+        addressPanel.add(remoteAddress, BorderLayout.CENTER);
+
+        remotePortLabel.setLabelFor(remotePort);
+        JPanel portPanel = new JPanel(new BorderLayout(5,5));
+        portPanel.add(remotePortLabel,BorderLayout.WEST);
+        portPanel.add(remotePort, BorderLayout.CENTER);
+
+        transportLabel.setLabelFor(transport);
+        JPanel transportPanel = new JPanel(new BorderLayout(5,5));
+        portPanel.add(transportLabel,BorderLayout.WEST);
+        portPanel.add(transport, BorderLayout.CENTER);
+
+        calleePanel.add(namePanel);
+        calleePanel.add(addressPanel);
+        calleePanel.add(portPanel);
+        calleePanel.add(transportPanel);
+
+        return calleePanel;
     }
-    public JPanel createLocalInfoPanel(){
-        return null;
+    public JPanel createCallerInfoPanel(){
+        JPanel callerPannel = new HorizontalPanel();
+        localUserAliasLabel.setLabelFor(localUserAlias);
+        JPanel aliasPanel = new JPanel(new BorderLayout(5, 5));
+        aliasPanel.add(localUserAliasLabel,BorderLayout.WEST);
+        aliasPanel.add(localUserAlias, BorderLayout.CENTER);
+
+        localNameLabel.setLabelFor(localName);
+        JPanel namePanel = new JPanel(new BorderLayout(5, 5));
+        namePanel.add(localNameLabel,BorderLayout.WEST);
+        namePanel.add(localName, BorderLayout.CENTER);
+
+        localDomainLabel.setLabelFor(localDomain);
+        JPanel domainPanel = new JPanel(new BorderLayout(5, 5));
+        domainPanel.add(localDomainLabel,BorderLayout.WEST);
+        domainPanel.add(localDomain, BorderLayout.CENTER);
+
+        callerPannel.add(aliasPanel);
+        callerPannel.add(namePanel);
+        callerPannel.add(domainPanel);
+
+        return callerPannel;
+    }
+    public JPanel createProxyInfoPannel() {
+        JPanel proxyPannel = new HorizontalPanel();
+
+        localAddressLabel.setLabelFor(localAddress);
+        JPanel addressPanel = new JPanel(new BorderLayout(5, 5));
+        addressPanel.add(localAddressLabel,BorderLayout.WEST);
+        addressPanel.add(localAddress, BorderLayout.CENTER);
+
+
+        localPortLabel.setLabelFor(localPort);
+        JPanel portPanel = new JPanel(new BorderLayout(5, 5));
+        portPanel.add(localPortLabel,BorderLayout.WEST);
+        portPanel.add(localPort, BorderLayout.CENTER);
+
+        proxyPannel.add(addressPanel);
+        proxyPannel.add(portPanel);
+
+        return proxyPannel;
     }
     public JPanel createUuidPanel() {
-        return null;
+        JPanel uuidPanel = new HorizontalPanel();
+
+        uuidLabel.setLabelFor(uuid);
+        uuidPanel.add(uuidLabel,BorderLayout.WEST);
+        uuidPanel.add(uuid, BorderLayout.CENTER);
+
+
+        return uuidPanel;
+    }
+    public JPanel createSdpPanel() {
+        JPanel sdpPanel = new HorizontalPanel();
+
+        sdpLabel.setLabelFor(sdp);
+        sdpPanel.add(sdpLabel,BorderLayout.WEST);
+        sdpPanel.add(sdp, BorderLayout.CENTER);
+        return sdpPanel;
     }
 
-    public JPanel createSdpPanel() {
-        return null;
-    }
 
     public String getRemoteName() {
         return remoteName.getText();
@@ -110,6 +192,13 @@ public class SipPanel extends JPanel {
 
     public void setLocalName(String localName) {
         this.localName.setText(localName);
+    }
+
+    public String getLocalNameDomain() {
+        return localDomain.getText();
+    }
+    public void setLocalNameDomain(String localName) {
+        this.localDomain.setText(localName);
     }
 
     public String getLocalAddress() {

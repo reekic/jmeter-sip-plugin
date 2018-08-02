@@ -16,8 +16,18 @@ public class SipSamper extends AbstractSampler {
         SampleResult sr = new SampleResult();
         SipClient sc = new SipClient();
 
-
-
+        sc.setCalleeIp(getRemoteAddress());
+        sc.setCalleeName(getRemoteName());
+        sc.setCalleePort(Integer.parseInt(getRemotePort()));
+        sc.setCallerAlias(getLocalUserAlias());
+        sc.setCallerName(getLocalName());
+        sc.setCallerDomain(getLocalNameDomain());
+        sc.setProxyIp(getLocalAddress());
+        sc.setProxyPort(Integer.parseInt(getLocalPort()));
+        sc.setCallerUuid(getUuid());
+        sc.setSdp(SdpSample.sdp);
+        sc.setSr(sr);
+        sc.startInvite();
 
         return sr;
     }
@@ -62,13 +72,20 @@ public class SipSamper extends AbstractSampler {
     public void setLocalUserAlias(String localUserAlias) {
         this.setProperty("SIPSAMPLER.LOCALUSERALIAS", localUserAlias);
     }
-
     public String getLocalName() {
         return this.getPropertyAsString("SIPSAMPLER.LOCALNAME");
     }
 
     public void setLocalName(String localName) {
         this.setProperty("SIPSAMPLER.LOCALNAME", localName);
+    }
+
+    public String getLocalNameDomain() {
+        return this.getPropertyAsString("SIPSAMPLER.LOCALNAMEDOMAIN");
+    }
+
+    public void setLocalNameDomain(String localNameDomain) {
+        this.setProperty("SIPSAMPLER.LOCALNAMEDOMAIN", localNameDomain);
     }
 
     public String getLocalAddress() {
