@@ -12,38 +12,39 @@ public class SipPanel extends JPanel {
     private JTextField remoteName = new JTextField();
 
     private JLabel remoteAddressLabel = new JLabel("Remote Address: ");
-    private JTextField remoteAddress;
+    private JTextField remoteAddress = new JTextField();
 
     private JLabel remotePortLabel = new JLabel("Remote Port: ");
-    private JTextField remotePort;
+    private JTextField remotePort = new JTextField();
 
     private JLabel transportLabel = new JLabel("Transport Protocol: ");
-    private JTextField transport;
+    private JTextField transport = new JTextField();
 
     private JLabel localUserAliasLabel = new JLabel( "Local User Alias: ");
-    private JTextField localUserAlias;
+    private JTextField localUserAlias = new JTextField();
 
     private JLabel localNameLabel = new JLabel("Local User Name: ");
-    private JTextField localName;
+    private JTextField localName = new JTextField();
 
     private JLabel localDomainLabel = new JLabel("Local User Domain: ");
-    private JTextField localDomain;
+    private JTextField localDomain = new JTextField();
 
     private JLabel localAddressLabel = new JLabel("Proxy Address: ");
-    private JTextField localAddress;
+    private JTextField localAddress = new JTextField();
 
     private JLabel localPortLabel = new JLabel("Proxy Port: ");
-    private JTextField localPort;
+    private JTextField localPort = new JTextField();
 
     private JLabel uuidLabel = new JLabel("UUID: ");
-    private JTextField uuid;
+    private JTextField uuid = new JTextField();
 
     private JLabel sdpLabel = new JLabel("SDP Message: ");
-    private JTextArea sdp;
+    private JTextArea sdp = new JTextArea();
 
 
     public SipPanel() {
-        setLayout(new BorderLayout(1, 15));
+        setLayout(new BorderLayout(0, 15));
+
 
         VerticalPanel mainPanel = new VerticalPanel();
         mainPanel.add(createRemoteInfoPanel());
@@ -55,31 +56,34 @@ public class SipPanel extends JPanel {
     }
 
     public JPanel createRemoteInfoPanel(){
-        JPanel calleePanel = new HorizontalPanel();
+        HorizontalPanel calleePanel = new HorizontalPanel();
 
         remoteNameLabel.setLabelFor(remoteName);
-        JPanel namePanel = new JPanel(new BorderLayout(5,5));
+        JPanel namePanel = new JPanel(new BorderLayout(5,0));
         namePanel.add(remoteNameLabel,BorderLayout.WEST);
         namePanel.add(remoteName, BorderLayout.CENTER);
 
+        calleePanel.add(namePanel);
+
         remoteAddressLabel.setLabelFor(remoteAddress);
-        JPanel addressPanel = new JPanel(new BorderLayout(5,5));
+        JPanel addressPanel = new JPanel(new BorderLayout(5,0));
         addressPanel.add(remoteAddressLabel,BorderLayout.WEST);
         addressPanel.add(remoteAddress, BorderLayout.CENTER);
 
+        calleePanel.add(addressPanel);
+
         remotePortLabel.setLabelFor(remotePort);
-        JPanel portPanel = new JPanel(new BorderLayout(5,5));
+        JPanel portPanel = new JPanel(new BorderLayout(5,0));
         portPanel.add(remotePortLabel,BorderLayout.WEST);
         portPanel.add(remotePort, BorderLayout.CENTER);
 
-        transportLabel.setLabelFor(transport);
-        JPanel transportPanel = new JPanel(new BorderLayout(5,5));
-        portPanel.add(transportLabel,BorderLayout.WEST);
-        portPanel.add(transport, BorderLayout.CENTER);
-
-        calleePanel.add(namePanel);
-        calleePanel.add(addressPanel);
         calleePanel.add(portPanel);
+
+        transportLabel.setLabelFor(transport);
+        JPanel transportPanel = new JPanel(new BorderLayout(5,0));
+        transportPanel.add(transportLabel,BorderLayout.WEST);
+        transportPanel.add(transport, BorderLayout.CENTER);
+
         calleePanel.add(transportPanel);
 
         return calleePanel;
@@ -87,17 +91,17 @@ public class SipPanel extends JPanel {
     public JPanel createCallerInfoPanel(){
         JPanel callerPannel = new HorizontalPanel();
         localUserAliasLabel.setLabelFor(localUserAlias);
-        JPanel aliasPanel = new JPanel(new BorderLayout(5, 5));
+        JPanel aliasPanel = new JPanel(new BorderLayout(5, 0));
         aliasPanel.add(localUserAliasLabel,BorderLayout.WEST);
         aliasPanel.add(localUserAlias, BorderLayout.CENTER);
 
         localNameLabel.setLabelFor(localName);
-        JPanel namePanel = new JPanel(new BorderLayout(5, 5));
+        JPanel namePanel = new JPanel(new BorderLayout(5, 0));
         namePanel.add(localNameLabel,BorderLayout.WEST);
         namePanel.add(localName, BorderLayout.CENTER);
 
         localDomainLabel.setLabelFor(localDomain);
-        JPanel domainPanel = new JPanel(new BorderLayout(5, 5));
+        JPanel domainPanel = new JPanel(new BorderLayout(5, 0));
         domainPanel.add(localDomainLabel,BorderLayout.WEST);
         domainPanel.add(localDomain, BorderLayout.CENTER);
 

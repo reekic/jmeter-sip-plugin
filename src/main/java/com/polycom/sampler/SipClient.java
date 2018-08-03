@@ -23,7 +23,7 @@ import java.text.ParseException;
 import java.util.*;
 
 public class SipClient implements SipListener{
-    private static final Logger log = LoggerFactory.getLogger(SipSamper.class);
+    private static final Logger log = LoggerFactory.getLogger(SipClient.class);
     private String callerAlias; //"Automation Account1"
     private String callerName; // "auto"
     private String callerDomain; //"user1.com"
@@ -54,6 +54,8 @@ public class SipClient implements SipListener{
     private ClientTransaction inviteTransactionId;
     private Dialog dialog;
     private Request ackRequest;
+
+    private boolean byeTaskRunning;
 
     private SampleResult sr;
 
@@ -176,6 +178,7 @@ public class SipClient implements SipListener{
         sipFactory.setPathName("gov.nist");
         Properties prop = new Properties();
         prop.setProperty("javax.sip.STACK_NAME", Thread.currentThread().getName());
+        prop.setProperty("javax.sip.IP_ADDRESS", getProxyIp());
         prop.setProperty("gov.nist.javax.sip.CACHE_CLIENT_CONNECTIONS", "false");
 
         try {
@@ -189,12 +192,14 @@ public class SipClient implements SipListener{
             headerFactory = sipFactory.createHeaderFactory();
             addressFactory = sipFactory.createAddressFactory();
             messageFactory = sipFactory.createMessageFactory();
+
             listeningPoint = sipStack.createListeningPoint(this.proxyIp, this.proxyPort, this.transport);
 
             sipProvider = sipStack.createSipProvider(listeningPoint);
+
             sipProvider.addSipListener(this);
 
-            SipURI requestUri = addressFactory.createSipURI(this.calleeName, this.calleeIp);
+            SipURI requestUri = addressFactory.createSipURI(this.calleeName, this.calleeIp+":"+this.calleePort);
 
             ArrayList viaList = createViaListHeader(this.transport, this.proxyPort);
             FromHeader from = createFromHeader(this.callerAlias, this.callerName, this.callerDomain);
@@ -230,7 +235,7 @@ public class SipClient implements SipListener{
         try {
             SipURI fromUri = addressFactory.createSipURI(callerName, callerDomain);
             Address fromAddress = addressFactory.createAddress(fromUri);
-            if(!callerAlias.equals(null)) {
+            if(callerAlias != null) {
                 fromAddress.setDisplayName(callerAlias);
             }
             String tag = Utils.getInstance().generateTag();
@@ -246,11 +251,11 @@ public class SipClient implements SipListener{
         try {
             SipURI toUri = addressFactory.createSipURI(calleeName, calleeIp);
             Address toAddress = addressFactory.createAddress(toUri);
-            if(!calleeAlias.equals(null)) {
+            if(calleeAlias != null) {
                 toAddress.setDisplayName(calleeAlias);
             }
             String tag = Utils.getInstance().generateTag();
-            to = headerFactory.createToHeader(toAddress, tag);
+            to = headerFactory.createToHeader(toAddress,null);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -287,7 +292,7 @@ public class SipClient implements SipListener{
             Address contactAddress = addressFactory.createAddress(contactUri);
             contactHeader = new Contact();
             contactHeader.setAddress(contactAddress);
-            if(!uuid.equals(null)) {
+            if(uuid != null) {
                 contactHeader.setSipInstanceParam(uuid);
             }
         } catch (ParseException e) {
@@ -306,7 +311,7 @@ public class SipClient implements SipListener{
         ServerTransaction serverTransactionId = requestEvent
                 .getServerTransaction();
 
-        System.out.println("\n\nRequest " + request.getMethod()
+        log.info("\n\nRequest " + request.getMethod()
                 + " received at " + sipStack.getStackName()
                 + " with server transaction id " + serverTransactionId);
 
@@ -352,12 +357,12 @@ public class SipClient implements SipListener{
     //client side
     @Override
     public void processResponse(ResponseEvent responseEvent) {
-        System.out.println("Got a response:");
+        log.info("Got a response:");
         Response response = (Response) responseEvent.getResponse();
         ClientTransaction tid = responseEvent.getClientTransaction();
         CSeqHeader cseq = (CSeqHeader) response.getHeader(CSeqHeader.NAME);
 
-        System.out.println("Response received : Status Code = "
+        log.info("Response received : Status Code = "
                 + response.getStatusCode() + " " + cseq);
 
 
@@ -375,23 +380,24 @@ public class SipClient implements SipListener{
         }
         // If the caller is supposed to send the bye
 
-//        if ( examples.simplecallsetup.Shootme.callerSendsBye && !byeTaskRunning) {
+//        if (!byeTaskRunning) {
 //            byeTaskRunning = true;
-//            new Timer().schedule(new ByeTask(dialog), 40000) ;
+//            new Timer().schedule(new ByeTask(dialog), 50000) ;
 //        }
 
-        System.out.println("transaction state is " + tid.getState());
-        System.out.println("Dialog = " + tid.getDialog());
-        System.out.println("Dialog State is " + tid.getDialog().getState());
+        log.info("transaction state is " + tid.getState());
+        log.info("Dialog = " + tid.getDialog());
+        log.info("Dialog State is " + tid.getDialog().getState());
 
         try {
+
             if (response.getStatusCode() == Response.OK) {
                 if (cseq.getMethod().equals(Request.INVITE)) {
 
-                    System.out.println("Dialog after 200 OK  " + dialog);
-                    System.out.println("Dialog State after 200 OK  " + dialog.getState());
+                    log.info("Dialog after 200 OK  " + dialog);
+                    log.info("Dialog State after 200 OK  " + dialog.getState());
                     ackRequest = dialog.createAck( ((CSeqHeader) response.getHeader(CSeqHeader.NAME)).getSeqNumber() );
-                    System.out.println("Sending ACK");
+                    log.info("Sending ACK");
                     dialog.sendAck(ackRequest);
                     // disposal the sdp message  to get the video port and audio port
 
@@ -419,8 +425,17 @@ public class SipClient implements SipListener{
 
                         }
                     }
-                    new Timer().schedule(new ByeTask(dialog), 0) ;
-                    sr.setResponseData("{\"videoPort\":"+videoPort+"}","utf-8");
+
+                    if(sr != null) {
+
+                        sr.setSuccessful(true);
+                        sr.setResponseData("{\"videoPort\":" + videoPort + "}", "utf-8");
+                    }
+                    System.out.println("============");
+                    sipProvider.removeSipListener(this);
+                    sipStack.deleteSipProvider(sipProvider);
+                    sipStack.stop();
+                    return;
                     // JvB: test REFER, reported bug in tag handling
                     // dialog.sendRequest(  sipProvider.getNewClientTransaction( dialog.createRequest("REFER") ));
 

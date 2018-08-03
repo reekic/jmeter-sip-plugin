@@ -20,9 +20,12 @@ public class SipSamplerGui extends AbstractSamplerGui {
         this.add(sipPanel, BorderLayout.CENTER);
     }
 
+    public String getStaticLabel() {
+        return "SIP Sampler";
+    }
     @Override
     public String getLabelResource() {
-        return null;
+        return "SIP Sampler";
     }
 
     @Override

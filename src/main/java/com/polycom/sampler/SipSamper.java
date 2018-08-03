@@ -11,9 +11,36 @@ public class SipSamper extends AbstractSampler {
     private static final Logger log = LoggerFactory.getLogger(SipSamper.class);
 
 
+    public SipSamper() {
+        super();
+        setName("SIP Sampler");
+    }
     @Override
     public SampleResult sample(Entry entry) {
         SampleResult sr = new SampleResult();
+
+
+        log.info("=====================================");
+        log.info("remote name:" + getRemoteName());
+        log.info("remote address:" + getRemoteAddress());
+        log.info("remote port:"+getRemotePort());
+        log.info("remote transport:"+getTransport());
+
+
+        log.info("local alias:"+getLocalUserAlias());
+        log.info("local name:"+getLocalName());
+        log.info("local domain:"+getLocalNameDomain());
+
+        log.info("proxy address:"+getLocalAddress());
+        log.info("proxy port:"+getLocalPort());
+
+        log.info("UUID:"+getUuid());
+        log.info("SDP:"+getSdp());
+        log.info("SDP length:"+getSdp().length());
+
+
+        log.info("=====================================");
+
         SipClient sc = new SipClient();
 
         sc.setCalleeIp(getRemoteAddress());
@@ -21,14 +48,20 @@ public class SipSamper extends AbstractSampler {
         sc.setCalleePort(Integer.parseInt(getRemotePort()));
         sc.setCallerAlias(getLocalUserAlias());
         sc.setCallerName(getLocalName());
+        sc.setTransport(getTransport());
         sc.setCallerDomain(getLocalNameDomain());
         sc.setProxyIp(getLocalAddress());
         sc.setProxyPort(Integer.parseInt(getLocalPort()));
         sc.setCallerUuid(getUuid());
         sc.setSdp(SdpSample.sdp);
         sc.setSr(sr);
+        sr.setSampleLabel("SIP Sampler-invite");
         sc.startInvite();
-
+        try {
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return sr;
     }
 
